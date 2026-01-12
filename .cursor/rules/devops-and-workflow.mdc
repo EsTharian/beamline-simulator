@@ -1,0 +1,34 @@
+---
+globs: docker/**/*, .github/workflows/**/*, .pre-commit-config.yaml
+alwaysApply: false
+---
+
+## DevOps, CI, and Workflow
+
+- **Containers**
+
+  - Prefer **Alpine** base images for both device and Python services.
+  - Use multi-stage Docker builds to keep runtime images minimal.
+  - Keep Docker-specific config under a `docker/` directory (e.g. `Dockerfile.device`, `Dockerfile.python`, `docker-compose.yml`).
+
+- **CI/CD**
+
+  - Use **GitHub Actions** for:
+    - Running Python tests + mypy + ruff.
+    - Building and testing the C server with Meson + CMocka.
+    - Optionally building Docker images.
+  - Enforce:
+    - No warnings in C builds.
+    - Lint + type-check passes on Python before merge.
+
+- **Pre-commit**
+
+  - Use **pre-commit** hooks to run:
+    - `ruff` (lint + format) on Python.
+    - `mypy` on Python.
+    - `clang-format` on C headers and sources.
+  - Keep hook configuration in `.pre-commit-config.yaml` at the repo root (or `python/` if you scope it there).
+
+- **Git & Commits**
+  - Prefer **Conventional Commits** (`feat:`, `fix:`, `docs:`, `refactor:`, etc.).
+  - Keep feature branches small and focused (device server, scan engine, analysis, etc. as separate PRs).

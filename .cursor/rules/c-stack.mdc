@@ -1,0 +1,35 @@
+---
+globs: device/**/*
+alwaysApply: false
+---
+
+## C Stack
+
+- **Language & Compiler**
+
+  - Target **C23** for new code.
+  - Use **GCC 13+** as the reference compiler.
+  - Always compile with:
+    - `-std=c23`
+    - `-Wall -Wextra -Wpedantic -Werror`
+
+- **Build System**
+
+  - Use **Meson** as the only supported build system for the C side.
+  - Default layout:
+    - `device/meson.build`
+    - `device/src/*.c`
+    - `device/include/*.h`
+    - `device/tests/*.c`
+
+- **Code Quality**
+
+  - Use **clang-format** for all `.c` and `.h` files.
+  - Run **clang-tidy** and **cppcheck** regularly on `device/src` and `device/tests`.
+  - Use **AddressSanitizer (ASan)** in debug builds.
+  - Validate memory behavior with **Valgrind** before claiming “valgrind clean” in docs.
+
+- **Testing**
+  - Use **CMocka** for unit tests.
+  - Keep tests under `device/tests` mirroring `device/src` modules.
+  - Integrate tests into Meson so `meson test` runs the full C test suite.

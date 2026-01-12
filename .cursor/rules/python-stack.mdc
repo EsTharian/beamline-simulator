@@ -1,0 +1,37 @@
+---
+globs: python/**/*
+alwaysApply: false
+---
+
+## Python Stack
+
+- **Interpreter**
+
+  - Target **Python 3.14** by default.
+  - Prefer features available in 3.11+ (pattern matching, `typing` improvements, `tomllib`, etc.).
+
+- **Package Management**
+
+  - Always use **uv** for:
+    - Creating environments.
+    - Installing dependencies.
+    - Running Python entrypoints.
+  - Prefer `uv run python ...` instead of calling `python` directly in docs / scripts.
+  - Keep dependencies declared only in `pyproject.toml` (no `requirements.txt` unless needed for external tools).
+
+- **Project Layout**
+
+  - Single top-level package: `beamline`.
+  - Subpackages:
+    - `beamline.daq` for device client / scan logic.
+    - `beamline.analysis` for XRD/XAFS utilities.
+    - `beamline.daq.nexus` for NeXus/HDF5 export.
+  - Tests go under `python/tests` mirroring package structure.
+
+- **Dependencies**
+  - Core scientific stack:
+    - `numpy>=1.26`
+    - `scipy>=1.11`
+    - `h5py>=3.10`
+  - Validation / config:
+    - `pydantic>=2` for structured config and scan parameter validation.

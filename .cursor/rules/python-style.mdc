@@ -1,0 +1,44 @@
+---
+globs: python/**/*
+alwaysApply: false
+---
+
+## Python Style & Quality
+
+- **Type Hints**
+
+  - All public functions, methods, and module-level variables must be fully type-annotated.
+  - Internal helpers can omit types only when the intent is crystal clear and the function is trivial.
+  - Prefer `from __future__ import annotations` when needed to avoid stringly-typed hints.
+
+- **Static Analysis**
+
+  - Use **mypy** in (near) strict mode:
+    - `disallow_untyped_defs = true`
+    - `disallow_incomplete_defs = true`
+    - `check_untyped_defs = true`
+    - `no_implicit_optional = true`
+  - Treat mypy warnings as issues to fix, not to silence with `# type: ignore` unless absolutely necessary.
+
+- **Linting & Formatting**
+
+  - Use **ruff** as the single source of truth for:
+    - Linting (`E`, `F`, `I`, `N`, `W`, `UP`, etc.).
+    - Import sorting.
+    - Formatting (`ruff format`) instead of black.
+  - Keep `line-length = 100` and `target-version = "py314"` in `pyproject.toml`.
+
+- **Testing**
+
+  - Use **pytest** as the main test runner.
+  - Use:
+    - `pytest-asyncio` for async code.
+    - `pytest-cov` for coverage, aiming for **80%+** on Python modules.
+    - `hypothesis` for property-based tests on numerical / scientific functions.
+
+- **APIs & Docs**
+  - Public APIs should have clear docstrings (Google or NumPy style), especially in:
+    - `beamline.daq.scan`
+    - `beamline.analysis.xrd`
+    - `beamline.analysis.xafs`
+  - Document physical units and coordinate systems explicitly in docstrings.
