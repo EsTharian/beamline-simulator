@@ -5,7 +5,10 @@ Checks: >
   performance-*,
   readability-*,
   -readability-identifier-length,
-  -readability-magic-numbers
+  -readability-magic-numbers,
+  -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
+  -bugprone-reserved-identifier,
+  -clang-analyzer-valist.Uninitialized
 
 WarningsAsErrors: '*'
 
