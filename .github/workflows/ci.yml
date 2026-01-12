@@ -17,7 +17,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y meson ninja-build gcc
+          sudo apt-get install -y meson ninja-build gcc libcmocka-dev
 
       - name: Configure
         working-directory: device
@@ -29,7 +29,7 @@ jobs:
 
       - name: Test
         working-directory: device
-        run: meson test -C build || true  # No tests yet
+        run: meson test -C build
 
   python-quality:
     name: Python Lint & Type Check
