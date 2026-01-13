@@ -38,3 +38,14 @@ repos:
       - id: clang-format
         files: ^device/.*\.(c|h)$
         args: ['--style=file:device/.clang-format']
+
+  # Auto-stage files modified by hooks
+  - repo: local
+    hooks:
+      - id: auto-stage-modified
+        name: Auto-stage modified files
+        entry: bash -c 'STAGED=$(git diff --cached --name-only); MODIFIED=$(git diff --name-only); for f in $MODIFIED; do if echo "$STAGED" | grep -q "^$f$"; then git add "$f"; fi; done; exit 0'
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+        always_run: true
