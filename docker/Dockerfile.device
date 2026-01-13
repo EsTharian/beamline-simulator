@@ -17,7 +17,8 @@ RUN meson setup build -Dc_std=c2x --buildtype=release -Db_sanitize=none --wipe &
 # Runtime stage
 FROM alpine:3.21
 
-RUN addgroup -g 1000 beamline && \
+RUN apk add --no-cache netcat-openbsd && \
+    addgroup -g 1000 beamline && \
     adduser -D -u 1000 -G beamline beamline
 
 COPY --from=builder /build/build/beamline-sim /usr/local/bin/beamline-sim
@@ -26,7 +27,7 @@ USER beamline
 
 EXPOSE 5064
 
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
     CMD nc -z localhost 5064 || exit 1
 
 CMD ["beamline-sim"]
