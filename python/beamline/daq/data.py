@@ -105,8 +105,7 @@ class ScanData:
         for motor_pv, positions in self.motor_positions.items():
             if len(positions) != expected_length:
                 raise ValueError(
-                    f"Motor {motor_pv} has {len(positions)} points, "
-                    f"expected {expected_length}"
+                    f"Motor {motor_pv} has {len(positions)} points, expected {expected_length}"
                 )
             if np.any(np.isnan(positions)) or np.any(np.isinf(positions)):
                 raise ValueError(f"Motor {motor_pv} contains NaN or Inf values")
@@ -115,8 +114,7 @@ class ScanData:
         for det_pv, readings in self.detector_readings.items():
             if len(readings) != expected_length:
                 raise ValueError(
-                    f"Detector {det_pv} has {len(readings)} points, "
-                    f"expected {expected_length}"
+                    f"Detector {det_pv} has {len(readings)} points, expected {expected_length}"
                 )
             if np.any(np.isnan(readings)) or np.any(np.isinf(readings)):
                 raise ValueError(f"Detector {det_pv} contains NaN or Inf values")

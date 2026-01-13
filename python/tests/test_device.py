@@ -6,7 +6,7 @@ import pytest
 
 from beamline.daq.client import DeviceClient
 from beamline.daq.device import Detector, Motor, MotorStatus, Shutter
-from beamline.daq.exceptions import ProtocolError, TimeoutError
+from beamline.daq.exceptions import TimeoutError
 
 
 class TestMotor:
@@ -124,7 +124,6 @@ class TestDetector:
 
     def test_read_multiple(self) -> None:
         """Test read_multiple."""
-        from unittest.mock import patch
 
         client = MagicMock(spec=DeviceClient)
         client.get.side_effect = [100.0, 101.0, 102.0]

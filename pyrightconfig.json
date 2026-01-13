@@ -1,8 +1,5 @@
 {
-  "include": [
-    "python",
-    "examples"
-  ],
+  "include": ["python", "examples"],
   "exclude": [
     "**/__pycache__",
     "**/node_modules",
@@ -13,13 +10,10 @@
     "**/.venv/lib/python*/test",
     "**/.venv/lib/python*/tests"
   ],
-  "extraPaths": [
-    "python"
-  ],
+  "extraPaths": ["python"],
   "venvPath": "python",
   "venv": ".venv",
   "pythonVersion": "3.14",
   "typeCheckingMode": "basic",
-  "reportMissingImports": true,
-  "reportMissingTypeStubs": false
+  "reportMissingImports": true
 }

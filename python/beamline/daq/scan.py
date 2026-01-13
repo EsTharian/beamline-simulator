@@ -6,7 +6,7 @@ import time
 from typing import Literal
 
 import numpy as np
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, ValidationInfo, field_validator
 
 from beamline.daq.client import DeviceClient
 from beamline.daq.data import ScanData
@@ -33,9 +33,9 @@ class LinearScanConfig(ScanConfig):
 
     @field_validator("stop")
     @classmethod
-    def validate_range(cls, v: float, info) -> float:
+    def validate_range(cls, v: float, info: ValidationInfo) -> float:
         """Validate start < stop."""
-        if "start" in info.data and v <= info.data["start"]:
+        if info.data and "start" in info.data and v <= info.data["start"]:
             raise ValueError("stop must be greater than start")
         return v
 

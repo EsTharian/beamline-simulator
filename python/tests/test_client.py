@@ -1,6 +1,6 @@
 """Unit tests for DeviceClient."""
 
-import socket
+import builtins
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -50,7 +50,7 @@ class TestDeviceClient:
         """Test connection failure."""
         with patch("beamline.daq.client.socket.socket") as mock_socket:
             mock_sock = MagicMock()
-            mock_sock.connect.side_effect = socket.error("Connection refused")
+            mock_sock.connect.side_effect = OSError("Connection refused")
             mock_socket.return_value = mock_sock
 
             client = DeviceClient("localhost", 5064)
@@ -170,7 +170,7 @@ class TestDeviceClient:
         """Test timeout handling."""
         with patch("beamline.daq.client.socket.socket") as mock_socket:
             mock_sock = MagicMock()
-            mock_sock.sendall.side_effect = socket.timeout("Operation timed out")
+            mock_sock.sendall.side_effect = builtins.TimeoutError("Operation timed out")
             mock_socket.return_value = mock_sock
 
             client = DeviceClient("localhost", 5064, timeout=1.0)

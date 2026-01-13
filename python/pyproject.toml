@@ -26,7 +26,7 @@ dependencies = [
     "pydantic>=2.5.0",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "pytest>=7.4.0",
     "pytest-cov>=4.1.0",
@@ -34,6 +34,7 @@ dev = [
     "hypothesis>=6.92.0",
     "ruff>=0.1.0",
     "mypy>=1.5.0",
+    "scipy-stubs>=1.14.0",
     "ipython>=8.14.0",
     "jupyter>=1.0.0",
     "matplotlib>=3.7.0",
@@ -69,6 +70,12 @@ warn_no_return = true
 strict_equality = true
 mypy_path = "."
 namespace_packages = true
+
+[[tool.mypy.overrides]]
+module = [
+    "scipy.*",
+]
+ignore_missing_imports = false  # Use scipy-stubs
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
