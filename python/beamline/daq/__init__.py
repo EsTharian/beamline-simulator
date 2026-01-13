@@ -3,6 +3,7 @@
 from beamline.daq.client import DeviceClient
 from beamline.daq.data import ScanData
 from beamline.daq.device import Detector, Motor, MotorStatus, Shutter
+from beamline.daq.nexus import NeXusWriter
 from beamline.daq.scan import (
     LinearScanConfig,
     MeshScanConfig,
@@ -23,4 +24,5 @@ __all__ = [
     "XAFSScanConfig",
     "ScanEngine",
     "ScanData",
+    "NeXusWriter",
 ]

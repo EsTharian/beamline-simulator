@@ -1,0 +1,33 @@
+# Build stage
+FROM python:3.14-slim AS builder
+
+RUN pip install --no-cache-dir uv
+
+WORKDIR /build
+COPY python/ /build/
+
+RUN uv sync --frozen
+
+# Runtime stage
+FROM python:3.14-slim
+
+RUN groupadd -r -g 1000 beamline && \
+    useradd -r -u 1000 -g beamline beamline && \
+    mkdir -p /app /data && \
+    chown -R beamline:beamline /app /data
+
+COPY --from=builder /build/.venv /app/.venv
+COPY --from=builder /build/beamline /app/beamline
+
+ENV PATH="/app/.venv/bin:$PATH"
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+USER beamline
+
+VOLUME ["/data"]
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD python -c "import beamline; print('OK')" || exit 1
+
+CMD ["python", "-m", "beamline"]

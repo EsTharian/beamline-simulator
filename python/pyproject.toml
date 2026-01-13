@@ -77,6 +77,10 @@ module = [
 ]
 ignore_missing_imports = false  # Use scipy-stubs
 
+[[tool.mypy.overrides]]
+module = "h5py.*"
+ignore_missing_imports = true  # h5py doesn't have stubs
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]

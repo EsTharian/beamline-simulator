@@ -50,20 +50,23 @@ jobs:
 
       - name: Run ruff check
         working-directory: python
-        run: uvx ruff check beamline/
+        run: uv run ruff check beamline/
 
       - name: Run ruff format check
         working-directory: python
-        run: uvx ruff format --check beamline/
+        run: uv run ruff format --check beamline/
 
       - name: Run mypy
         working-directory: python
-        run: uvx mypy beamline/
+        run: uv run mypy beamline/
 
   python-test:
-    name: Python Tests
+    name: Python Tests (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
     needs: python-quality
+    strategy:
+      matrix:
+        python-version: ["3.12", "3.13", "3.14"]
 
     steps:
       - uses: actions/checkout@v4
@@ -71,8 +74,8 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v5
 
-      - name: Set up Python
-        run: uv python install 3.14 || uv python install 3.13
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
 
       - name: Install dependencies
         working-directory: python
@@ -80,4 +83,111 @@ jobs:
 
       - name: Run tests
         working-directory: python
-        run: uvx pytest tests/ -v --cov=beamline --cov-report=xml || true  # No tests yet
+        run: uv run pytest tests/ -v --cov=beamline --cov-report=xml --cov-report=term-missing
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./python/coverage.xml
+          flags: python
+          name: python-${{ matrix.python-version }}
+
+  docker-build:
+    name: Docker Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build device server image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/Dockerfile.device
+          push: false
+          tags: beamline-simulator/device-server:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build Python client image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/Dockerfile.python
+          push: false
+          tags: beamline-simulator/python-client:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  docker-test:
+    name: Docker Integration Test
+    runs-on: ubuntu-latest
+    needs: docker-build
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start services
+        working-directory: docker
+        run: docker-compose up -d
+
+      - name: Wait for device server
+        run: |
+          timeout 30 bash -c 'until nc -z localhost 5064; do sleep 1; done'
+
+      - name: Stop services
+        working-directory: docker
+        run: docker-compose down
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: docker-build
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build device server image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/Dockerfile.device
+          push: false
+          tags: beamline-simulator/device-server:latest
+
+      - name: Build Python client image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/Dockerfile.python
+          push: false
+          tags: beamline-simulator/python-client:latest
+
+      - name: Run Trivy vulnerability scanner (device)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: beamline-simulator/device-server:latest
+          format: "sarif"
+          output: "trivy-device.sarif"
+          severity: "CRITICAL,HIGH"
+
+      - name: Run Trivy vulnerability scanner (python)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: beamline-simulator/python-client:latest
+          format: "sarif"
+          output: "trivy-python.sarif"
+          severity: "CRITICAL,HIGH"
+
+      - name: Upload Trivy results (device)
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-device.sarif
+
+      - name: Upload Trivy results (python)
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-python.sarif

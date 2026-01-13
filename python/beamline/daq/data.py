@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Literal
 
 import numpy as np
 
@@ -118,3 +119,36 @@ class ScanData:
                 )
             if np.any(np.isnan(readings)) or np.any(np.isinf(readings)):
                 raise ValueError(f"Detector {det_pv} contains NaN or Inf values")
+
+    def to_nexus(
+        self,
+        path: Path | str,
+        title: str | None = None,
+        scan_type: Literal["linear", "mesh", "xafs"] = "linear",
+    ) -> None:
+        """Export scan data to NeXus/HDF5 format.
+
+        Args:
+            path: Output file path
+            title: Scan title (default: from metadata or auto-generated)
+            scan_type: Scan type for proper axis labeling
+
+        Raises:
+            ValueError: If data validation fails
+            ImportError: If h5py is not available
+        """
+        # Lazy import to avoid dependency if not using NeXus
+        try:
+            from beamline.daq.nexus import NeXusWriter
+        except ImportError as e:
+            raise ImportError(
+                "h5py is required for NeXus export. Install with: pip install h5py"
+            ) from e
+
+        self.validate()
+
+        path_obj = Path(path)
+        path_obj.parent.mkdir(parents=True, exist_ok=True)
+
+        with NeXusWriter(path_obj, mode="w") as writer:
+            writer.write_scan(self, title=title, scan_type=scan_type)

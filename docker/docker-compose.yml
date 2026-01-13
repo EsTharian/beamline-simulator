@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  device-server:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.device
+    image: beamline-simulator/device-server:latest
+    container_name: beamline-device
+    ports:
+      - "5064:5064"
+    networks:
+      - beamline-network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "5064"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+
+  python-client:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.python
+    image: beamline-simulator/python-client:latest
+    container_name: beamline-python
+    depends_on:
+      device-server:
+        condition: service_healthy
+    networks:
+      - beamline-network
+    volumes:
+      - ../example_outputs:/data
+    environment:
+      - DEVICE_HOST=device-server
+      - DEVICE_PORT=5064
+    restart: "no"
+
+networks:
+  beamline-network:
+    driver: bridge

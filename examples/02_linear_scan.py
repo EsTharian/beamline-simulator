@@ -24,11 +24,15 @@ def main() -> None:
         # Export
         data.to_csv("example_outputs/scan_001.csv")
         print(f"Scan complete: {len(data.timestamps)} points")
-        print(f"Motor range: {data.motor_positions['BL02:SAMPLE:X'].min():.1f} to "
-              f"{data.motor_positions['BL02:SAMPLE:X'].max():.1f}")
-        print(f"Detector I0 range: {data.detector_readings['BL02:DET:I0'].min():.0f} to "
-              f"{data.detector_readings['BL02:DET:I0'].max():.0f}")
-        print(f"Data exported to example_outputs/scan_001.csv")
+        print(
+            f"Motor range: {data.motor_positions['BL02:SAMPLE:X'].min():.1f} to "
+            f"{data.motor_positions['BL02:SAMPLE:X'].max():.1f}"
+        )
+        print(
+            f"Detector I0 range: {data.detector_readings['BL02:DET:I0'].min():.0f} to "
+            f"{data.detector_readings['BL02:DET:I0'].max():.0f}"
+        )
+        print("Data exported to example_outputs/scan_001.csv")
 
 
 if __name__ == "__main__":
