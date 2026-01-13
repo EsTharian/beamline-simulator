@@ -23,6 +23,7 @@ wheels/
 venv/
 ENV/
 .ruff_cache/
+example_outputs/
 
 # uv
 .uv/

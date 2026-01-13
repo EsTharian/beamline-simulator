@@ -1,9 +1,26 @@
-"""Data acquisition module for beamline control."""
+"""Beamline DAQ package for device control and data acquisition."""
 
-__all__: list[str] = []
+from beamline.daq.client import DeviceClient
+from beamline.daq.data import ScanData
+from beamline.daq.device import Detector, Motor, MotorStatus, Shutter
+from beamline.daq.scan import (
+    LinearScanConfig,
+    MeshScanConfig,
+    ScanConfig,
+    ScanEngine,
+    XAFSScanConfig,
+)
 
-# Exports will be added in M3:
-# - DeviceClient
-# - Motor, Detector, Shutter
-# - LinearScan, MeshScan, XAFSScan
-# - NeXusWriter
+__all__ = [
+    "DeviceClient",
+    "Motor",
+    "Detector",
+    "Shutter",
+    "MotorStatus",
+    "ScanConfig",
+    "LinearScanConfig",
+    "MeshScanConfig",
+    "XAFSScanConfig",
+    "ScanEngine",
+    "ScanData",
+]

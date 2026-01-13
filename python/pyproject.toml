@@ -67,6 +67,8 @@ warn_redundant_casts = true
 warn_unused_ignores = true
 warn_no_return = true
 strict_equality = true
+mypy_path = "."
+namespace_packages = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -74,3 +76,7 @@ python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 asyncio_mode = "auto"
+
+[tool.pyright]
+include = ["beamline", "tests", "../examples"]
+exclude = ["**/__pycache__", "**/.venv"]
