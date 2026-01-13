@@ -132,7 +132,7 @@ jobs:
 
       - name: Start services
         working-directory: docker
-        run: docker-compose up -d
+        run: docker compose up -d
 
       - name: Wait for device server
         run: |
@@ -140,7 +140,7 @@ jobs:
 
       - name: Stop services
         working-directory: docker
-        run: docker-compose down
+        run: docker compose down
 
   security-scan:
     name: Security Scan
