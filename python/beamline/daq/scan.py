@@ -60,7 +60,9 @@ class MeshScanConfig(ScanConfig):
 
     @field_validator("motor1", "motor2")
     @classmethod
-    def validate_motor_range(cls, v: tuple[str, float, float, int]) -> tuple[str, float, float, int]:
+    def validate_motor_range(
+        cls, v: tuple[str, float, float, int]
+    ) -> tuple[str, float, float, int]:
         """Validate motor range."""
         pv, start, stop, steps = v
         if steps <= 0:
@@ -113,7 +115,7 @@ class XAFSScanConfig(ScanConfig):
             current_stop = v[i][1]
             next_start = v[i + 1][0]
             if next_start < current_stop:
-                raise ValueError(f"Region {i+1} overlaps with region {i}")
+                raise ValueError(f"Region {i + 1} overlaps with region {i}")
 
         return v
 
@@ -123,7 +125,7 @@ class XAFSScanConfig(ScanConfig):
         Returns:
             Array of energy values in eV
         """
-        energies = []
+        energies: list[float] = []
         for start_offset, stop_offset, step_size in self.regions:
             start = self.edge + start_offset
             stop = self.edge + stop_offset
@@ -187,9 +189,7 @@ class ScanEngine:
                 detector_data[det_pv].append(value)
 
         # Convert lists to numpy arrays
-        detector_readings = {
-            det_pv: np.array(values) for det_pv, values in detector_data.items()
-        }
+        detector_readings = {det_pv: np.array(values) for det_pv, values in detector_data.items()}
 
         return ScanData(
             motor_positions={config.motor: positions},
@@ -264,9 +264,7 @@ class ScanEngine:
                 point_idx += 1
 
         # Convert lists to numpy arrays
-        detector_readings = {
-            det_pv: np.array(values) for det_pv, values in detector_data.items()
-        }
+        detector_readings = {det_pv: np.array(values) for det_pv, values in detector_data.items()}
 
         return ScanData(
             motor_positions={
@@ -326,9 +324,7 @@ class ScanEngine:
                 detector_data[det_pv].append(value)
 
         # Convert lists to numpy arrays
-        detector_readings = {
-            det_pv: np.array(values) for det_pv, values in detector_data.items()
-        }
+        detector_readings = {det_pv: np.array(values) for det_pv, values in detector_data.items()}
 
         return ScanData(
             motor_positions={config.energy_pv: energies},

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import builtins
+import contextlib
 import socket
 from types import TracebackType
 
@@ -62,23 +64,19 @@ class DeviceClient:
             self._socket.settimeout(self.timeout)
             self._socket.connect((self.host, self.port))
             self._connected = True
-        except (socket.error, OSError) as e:
+        except OSError as e:
             self._connected = False
             if self._socket:
-                try:
+                with contextlib.suppress(Exception):
                     self._socket.close()
-                except Exception:
-                    pass
                 self._socket = None
             raise ConnectionError(f"Failed to connect to {self.host}:{self.port}") from e
 
     def disconnect(self) -> None:
         """Close TCP connection."""
         if self._socket:
-            try:
+            with contextlib.suppress(Exception):
                 self._socket.close()
-            except Exception:
-                pass
             self._socket = None
         self._connected = False
 
@@ -195,10 +193,7 @@ class DeviceClient:
         if not self._connected:
             raise ConnectionError("Not connected to server")
 
-        if pattern:
-            command = f"LIST:{pattern}"
-        else:
-            command = "LIST"
+        command = f"LIST:{pattern}" if pattern else "LIST"
 
         response = self._send_command(command)
         status, data = self._parse_response(response)
@@ -271,7 +266,7 @@ class DeviceClient:
 
         try:
             # Send command with newline
-            self._socket.sendall(f"{command}\n".encode("utf-8"))
+            self._socket.sendall(f"{command}\n".encode())
 
             # Receive response
             response_bytes = b""
@@ -286,9 +281,9 @@ class DeviceClient:
             response = response_bytes.decode("utf-8").strip()
             return response
 
-        except socket.timeout as e:
+        except builtins.TimeoutError as e:
             raise TimeoutError(f"Operation timed out after {self.timeout}s") from e
-        except (socket.error, OSError) as e:
+        except OSError as e:
             self._connected = False
             raise ConnectionError(f"Socket error: {e}") from e
 

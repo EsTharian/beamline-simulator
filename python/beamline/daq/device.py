@@ -9,7 +9,7 @@ import numpy as np
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from beamline.daq.client import DeviceClient
-from beamline.daq.exceptions import ProtocolError, TimeoutError
+from beamline.daq.exceptions import TimeoutError
 
 
 class MotorStatus(str, Enum):
@@ -104,9 +104,7 @@ class Motor(BaseModel):
 
             elapsed = time.time() - start_time
             if elapsed >= timeout:
-                raise TimeoutError(
-                    f"Motor {self.pv} did not reach IDLE state within {timeout}s"
-                )
+                raise TimeoutError(f"Motor {self.pv} did not reach IDLE state within {timeout}s")
 
             time.sleep(poll_interval)
 
