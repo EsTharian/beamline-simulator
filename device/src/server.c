@@ -107,8 +107,12 @@ static void execute_command(client_t *client, const cmd_t *cmd) {
 
     case CMD_MONITOR:
         client->monitoring = true;
-        strncpy(client->monitor_pv, cmd->target, BEAMLINE_PV_NAME_MAX - 1);
-        client->monitor_pv[BEAMLINE_PV_NAME_MAX - 1] = '\0';
+        {
+            size_t len = strlen(cmd->target);
+            size_t copy_len = len < BEAMLINE_PV_NAME_MAX - 1 ? len : BEAMLINE_PV_NAME_MAX - 1;
+            memcpy(client->monitor_pv, cmd->target, copy_len);
+            client->monitor_pv[copy_len] = '\0';
+        }
         client->monitor_interval_ms = cmd->monitor_interval_ms;
         client->last_monitor_time = get_time_ms();
         protocol_format_response((protocol_format_response_params_t) {

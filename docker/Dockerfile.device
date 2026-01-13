@@ -11,7 +11,7 @@ RUN apk add --no-cache \
 WORKDIR /build
 COPY device/ /build/
 
-RUN meson setup build -Dc_std=c2x --buildtype=release && \
+RUN meson setup build -Dc_std=c2x --buildtype=release -Db_sanitize=none --wipe && \
     meson compile -C build
 
 # Runtime stage
